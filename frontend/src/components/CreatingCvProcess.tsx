@@ -40,7 +40,7 @@ const CreatingCvProcess = ({
       cvCreationApi.analyzeJobListing(jobListing),
     onSuccess: (data) => {
       generateCvMutation.mutate(data);
-      console.log("Job listing analyzed:", data);
+      // console.log("Job listing analyzed:", data);
       setApplicationSteps(2);
     },
     onError: (error) => {

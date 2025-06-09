@@ -1,10 +1,32 @@
-const TIME = 2000;
+import axios from "axios";
+
+const TIME = 20000;
 
 export const cvCreationApi = {
   analyzeJobListing: async (jobListing: string) => {
-    console.log("Analyzing job listing...");
-    await new Promise((resolve) => setTimeout(resolve, TIME));
-    return "Job listing Data";
+    if (!jobListing) {
+      throw new Error("Job listing is required");
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/analyze-job-listing",
+        {
+          jobListing,
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Failed to analyze job listing");
+      }
+
+      console.log("Job listing response from backend:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Error analyzing job listing:", error);
+      throw error;
+    }
   },
   generateCv: async (jobListing: string) => {
     console.log("Generating CV...");

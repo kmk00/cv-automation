@@ -3,7 +3,7 @@ import JobDescriptionForm from "./components/JobDescriptionForm";
 import CreatingCvProcess from "./components/CreatingCvProcess";
 
 function App() {
-  const [applicationSteps, setApplicationSteps] = useState<number>(1);
+  const [applicationSteps, setApplicationSteps] = useState<number>(0);
   const [jobListing, setJobListing] = useState<string>("");
 
   return (
