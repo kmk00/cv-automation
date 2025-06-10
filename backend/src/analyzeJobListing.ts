@@ -18,7 +18,20 @@ async function analyzeJobListing(fastify, options) {
 
     const apiResponse = await queryOpenAI(prompt);
 
-    return { data: apiResponse };
+    if (!apiResponse) {
+      throw new Error("Failed to analyze job listing");
+    }
+
+    let cleanResponse = apiResponse;
+    if (cleanResponse.startsWith("```json\n")) {
+      cleanResponse = cleanResponse
+        .replace("```json\n", "")
+        .replace("\n```", "");
+    }
+
+    const parsedResponse = JSON.parse(cleanResponse);
+
+    return { data: parsedResponse };
   });
 }
 
