@@ -23,7 +23,7 @@ export type CV = {
   projects: {
     name: string;
     description: string;
-    technologies: string[];
+    technologies: string[] | string;
   }[];
   soft_skills: string[];
   technical_skills: string[];
