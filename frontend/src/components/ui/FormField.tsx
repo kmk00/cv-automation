@@ -23,7 +23,8 @@ const FormField = ({
           {fieldLabel}
         </label>
         <textarea
-          className="border border-gray-300 p-2 rounded-md w-full"
+          id={fieldName}
+          className="border border-gray-300 p-2 rounded-l-md w-full"
           {...register(fieldName)}
           placeholder={fieldLabel}
           rows={rows}
@@ -41,7 +42,8 @@ const FormField = ({
         {fieldLabel}
       </label>
       <input
-        className="border border-gray-300 p-2 rounded-md w-full"
+        id={fieldName}
+        className="border border-gray-300 p-2 rounded-l-md w-full"
         {...register(fieldName)}
         placeholder={fieldLabel}
         type={fieldType}

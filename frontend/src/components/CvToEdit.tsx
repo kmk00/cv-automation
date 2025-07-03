@@ -2,24 +2,20 @@ import { useForm, useFieldArray } from "react-hook-form";
 import type { CV } from "../../types/CV";
 import FormCard from "./ui/FormCard";
 import FormField from "./ui/FormField";
+import DynamicExperienceResponsibility from "./DynamicExperienceResponsibility";
+import DynamicSoftSkills from "./DynamicSoftSkills";
+import DynamicTechnicalSkills from "./DynamicTechnicalSkills";
+import ConfirmationModal from "./ConfirmationModal";
+import { useState } from "react";
 
-// TODO: CHANGE STYLES FOR THE BUTTONS
 // TODO: ADD VALIDATION FOR THE FORM FIELDS
-// TODO: ADD SUBMIT FUNCTIONALITY TO THE FORM
-// TODO: IMPROVE UX OF THE FORM
-// TODO: ADD A CONFIRMATION DIALOG BEFORE SUBMITTING THE FORM
 
 interface CvToEditProps {
   personalizedCv: CV;
 }
 
 const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
-  console.log(
-    "CvToEdit component rendered with personalizedCv:",
-    personalizedCv
-  );
-
-  const { register, handleSubmit, control } = useForm<CV>({
+  const { register, control } = useForm<CV>({
     defaultValues: {
       ...personalizedCv,
       projects: personalizedCv.projects.map((project) => ({
@@ -30,6 +26,8 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
       })),
     },
   });
+
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const { fields: workExperienceFields, update: updateWorkExperience } =
     useFieldArray({
@@ -55,6 +53,10 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
     name: "technical_skills" as any,
   });
 
+  const handleGenerateTemplate = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsConfirmationModalOpen(true);
+  };
   const addSoftSkillField = () => {
     appendSoftSkill("");
   };
@@ -154,73 +156,19 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
             />
           </FormCard>
 
-          <FormCard cardLabel="Soft Skills">
-            <div className="space-y-4 flex flex-col">
-              {softSkillsFields.map((field, index) => (
-                <div key={field.id} className="flex items-start gap-2">
-                  <div className="flex-1">
-                    <FormField
-                      register={register}
-                      fieldName={`soft_skills.${index}`}
-                      fieldLabel={`Soft Skill ${index + 1}`}
-                      fieldType="textarea"
-                    />
-                  </div>
-                  {softSkillsFields.length > 1 && (
-                    <button
-                      type="button"
-                      className="mt-6 text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded border border-red-300 hover:border-red-500"
-                      onClick={() => handleRemoveSoftSkill(index)}
-                      title="Remove this soft skill"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-              onClick={addSoftSkillField}
-            >
-              Add Soft Skill
-            </button>
-          </FormCard>
+          <DynamicSoftSkills
+            softSkillsFields={softSkillsFields}
+            register={register}
+            addSoftSkill={addSoftSkillField}
+            handleRemoveSoftSkill={handleRemoveSoftSkill}
+          />
 
-          <FormCard cardLabel="Technical Skills">
-            <div className="space-y-4 flex flex-col">
-              {technicalSkillsFields.map((field, index) => (
-                <div key={field.id} className="flex items-start gap-2">
-                  <div className="flex-1">
-                    <FormField
-                      register={register}
-                      fieldName={`technical_skills.${index}`}
-                      fieldLabel={`Technical Skill ${index + 1}`}
-                      fieldType="textarea"
-                    />
-                  </div>
-                  {technicalSkillsFields.length > 1 && (
-                    <button
-                      type="button"
-                      className="mt-6 text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded border border-red-300 hover:border-red-500"
-                      onClick={() => handleRemoveTechnicalSkill(index)}
-                      title="Remove this technical skill"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-              onClick={addTechnicalSkillField}
-            >
-              Add Technical Skill
-            </button>
-          </FormCard>
+          <DynamicTechnicalSkills
+            technicalSkillsFields={technicalSkillsFields}
+            register={register}
+            addTechnicalSkill={addTechnicalSkillField}
+            handleRemoveTechnicalSkill={handleRemoveTechnicalSkill}
+          />
 
           <FormCard cardLabel="Languages">
             <div className="space-y-4 flex flex-col">
@@ -240,18 +188,24 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
               ))}
             </div>
           </FormCard>
+
+          <button
+            type="submit"
+            className="hidden md:block w-full cursor-pointer hover:bg-blue-600 bg-blue-500 transition text-white px-4 py-8 rounded font-bold text-2xl"
+            onClick={handleGenerateTemplate}
+          >
+            Generate Template
+          </button>
         </div>
         <div>
           <FormCard cardLabel="Work Experience">
             <div className="space-y-4">
               {workExperienceFields.map((experience, index) => (
-                <div
-                  className="space-y-4 flex flex-col pb-4 mb-4"
-                  key={experience.id}
-                >
-                  <h4 className="text-sm font-semibold">
+                <div className="space-y-4 flex flex-col" key={experience.id}>
+                  <h4 className="text-sm font-semibold pb-2 mt-4">
                     Work Experience {index + 1}
                   </h4>
+
                   <FormField
                     register={register}
                     fieldName={`work_experience.${index}.position_name`}
@@ -272,46 +226,13 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     fieldName={`work_experience.${index}.work_end`}
                     fieldLabel="Work End Date"
                   />
-
-                  <div>
-                    {experience.responsibilities.map(
-                      (_responsibility, rIndex) => (
-                        <div
-                          key={rIndex}
-                          className="flex items-start gap-2 mb-2"
-                        >
-                          <div className="flex-1">
-                            <FormField
-                              register={register}
-                              fieldName={`work_experience.${index}.responsibilities.${rIndex}`}
-                              fieldLabel={`Responsibility ${rIndex + 1}`}
-                              fieldType="textarea"
-                              rows={2}
-                            />
-                          </div>
-                          {experience.responsibilities.length > 1 && (
-                            <button
-                              type="button"
-                              className="mt-6 text-red-500 hover:text-red-700 text-sm px-2 py-1 rounded border border-red-300 hover:border-red-500"
-                              onClick={() =>
-                                handleRemoveResponsibility(index, rIndex)
-                              }
-                              title="Remove this responsibility"
-                            >
-                              ✕
-                            </button>
-                          )}
-                        </div>
-                      )
-                    )}
-                    <button
-                      type="button"
-                      className="text-blue-500 hover:text-blue-700 w-full cursor-pointer bg-blue-500/10 hover:bg-blue-500/20 rounded px-2 py-2 text-sm border border-blue-300 hover:border-blue-500 transition-colors"
-                      onClick={() => handleAddResponsibility(index)}
-                    >
-                      + Add Responsibility
-                    </button>
-                  </div>
+                  <DynamicExperienceResponsibility
+                    index={index}
+                    experience={experience}
+                    register={register}
+                    handleAddResponsibility={handleAddResponsibility}
+                    handleRemoveResponsibility={handleRemoveResponsibility}
+                  />
                 </div>
               ))}
             </div>
@@ -370,17 +291,22 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
               ))}
             </div>
           </FormCard>
-          <button
-            type="submit"
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={handleSubmit((data) => {
-              console.log("Form submitted with data:", data);
-            })}
-          >
-            Save CV
-          </button>
         </div>
+        <button
+          type="submit"
+          className="md:hidden w-full cursor-pointer hover:bg-blue-600 bg-blue-500 transition text-white px-4 py-8 rounded font-bold text-2xl"
+          onClick={handleGenerateTemplate}
+        >
+          Generate Template
+        </button>
       </form>
+
+      {isConfirmationModalOpen && (
+        <ConfirmationModal
+          personalizedCv={personalizedCv}
+          onClose={() => setIsConfirmationModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
