@@ -7,15 +7,19 @@ import DynamicSoftSkills from "./DynamicSoftSkills";
 import DynamicTechnicalSkills from "./DynamicTechnicalSkills";
 import ConfirmationModal from "./ConfirmationModal";
 import { useState } from "react";
-
-// TODO: ADD VALIDATION FOR THE FORM FIELDS
+import { validationSchema } from "../lib/cvEditValidationSchema";
 
 interface CvToEditProps {
   personalizedCv: CV;
 }
 
 const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
-  const { register, control } = useForm<CV>({
+  const {
+    register,
+    control,
+    trigger,
+    formState: { errors },
+  } = useForm<CV>({
     defaultValues: {
       ...personalizedCv,
       projects: personalizedCv.projects.map((project) => ({
@@ -53,8 +57,25 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
     name: "technical_skills" as any,
   });
 
-  const handleGenerateTemplate = (e: React.FormEvent) => {
+  const handleGenerateTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = await trigger();
+
+    if (!isValid) {
+      const firstError = document.querySelector(".error-field");
+
+      if (firstError) {
+        const offsetTop =
+          firstError.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: offsetTop - 50,
+          behavior: "smooth",
+        });
+      }
+      return;
+    }
+
     setIsConfirmationModalOpen(true);
   };
   const addSoftSkillField = () => {
@@ -109,36 +130,54 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
       <form className="grid md:grid-cols-[1fr_2fr] gap-x-6">
         <div>
           <FormCard cardLabel="General Information">
-            <FormField register={register} fieldName="name" fieldLabel="Name" />
+            <FormField
+              register={register}
+              fieldName="name"
+              fieldLabel="Name"
+              error={errors.name?.message}
+              validation={validationSchema.name}
+            />
             <FormField
               register={register}
               fieldName="surname"
               fieldLabel="Surname"
+              error={errors.surname?.message}
+              validation={validationSchema.surname}
             />
             <FormField
               register={register}
               fieldName="email"
               fieldLabel="Email"
+              error={errors.email?.message}
+              validation={validationSchema.email}
             />
             <FormField
               register={register}
               fieldName="phone_number"
               fieldLabel="Phone Number"
+              error={errors.phone_number?.message}
+              validation={validationSchema.phone_number}
             />
             <FormField
               register={register}
               fieldName="linkedin"
               fieldLabel="LinkedIn Profile"
+              error={errors.linkedin?.message}
+              validation={validationSchema.linkedin}
             />
             <FormField
               register={register}
               fieldName="github"
               fieldLabel="GitHub Profile"
+              error={errors.github?.message}
+              validation={validationSchema.github}
             />
             <FormField
               register={register}
               fieldName="portfolio"
               fieldLabel="Portfolio Website"
+              error={errors.portfolio?.message}
+              validation={validationSchema.portfolio}
             />
             <FormField
               register={register}
@@ -146,6 +185,8 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
               fieldLabel="Work Profile"
               fieldType="textarea"
               rows={10}
+              error={errors.work_profile?.message}
+              validation={validationSchema.work_profile}
             />
             <FormField
               register={register}
@@ -153,6 +194,8 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
               fieldLabel="Interests"
               fieldType="textarea"
               rows={5}
+              error={errors.interests?.message}
+              validation={validationSchema.interests}
             />
           </FormCard>
 
@@ -161,6 +204,8 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
             register={register}
             addSoftSkill={addSoftSkillField}
             handleRemoveSoftSkill={handleRemoveSoftSkill}
+            validation={validationSchema.soft_skills}
+            errors={errors}
           />
 
           <DynamicTechnicalSkills
@@ -168,6 +213,8 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
             register={register}
             addTechnicalSkill={addTechnicalSkillField}
             handleRemoveTechnicalSkill={handleRemoveTechnicalSkill}
+            validation={validationSchema.technical_skills}
+            errors={errors}
           />
 
           <FormCard cardLabel="Languages">
@@ -178,11 +225,15 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     register={register}
                     fieldName={`languages.${index}.name`}
                     fieldLabel={`Language ${index + 1} Name`}
+                    error={errors.languages?.[index]?.name?.message}
+                    validation={validationSchema.languages}
                   />
                   <FormField
                     register={register}
                     fieldName={`languages.${index}.level`}
                     fieldLabel={`Language ${index + 1} Level`}
+                    error={errors.languages?.[index]?.level?.message}
+                    validation={validationSchema.languages}
                   />
                 </div>
               ))}
@@ -210,21 +261,36 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     register={register}
                     fieldName={`work_experience.${index}.position_name`}
                     fieldLabel="Position Name"
+                    error={
+                      errors.work_experience?.[index]?.position_name?.message
+                    }
+                    validation={validationSchema.work_experience}
                   />
                   <FormField
                     register={register}
                     fieldName={`work_experience.${index}.company_name`}
                     fieldLabel="Company Name"
+                    error={
+                      errors.work_experience?.[index]?.company_name?.message
+                    }
+                    validation={validationSchema.work_experience}
                   />
                   <FormField
                     register={register}
                     fieldName={`work_experience.${index}.work_start`}
                     fieldLabel="Work Start Date"
+                    error={errors.work_experience?.[index]?.work_start?.message}
+                    validation={validationSchema.work_experience}
                   />
                   <FormField
                     register={register}
                     fieldName={`work_experience.${index}.work_end`}
                     fieldLabel="Work End Date"
+                    error={
+                      index === 0
+                        ? undefined
+                        : errors.work_experience?.[index]?.work_end?.message
+                    }
                   />
                   <DynamicExperienceResponsibility
                     index={index}
@@ -232,6 +298,7 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     register={register}
                     handleAddResponsibility={handleAddResponsibility}
                     handleRemoveResponsibility={handleRemoveResponsibility}
+                    errors={errors}
                   />
                 </div>
               ))}
@@ -245,21 +312,28 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     register={register}
                     fieldName={`education.${index}.subject`}
                     fieldLabel="Subject"
+                    error={errors.education?.[index]?.subject?.message}
+                    validation={validationSchema.education}
                   />
                   <FormField
                     register={register}
                     fieldName={`education.${index}.date_start`}
                     fieldLabel="Start Date"
+                    error={errors.education?.[index]?.date_start?.message}
+                    validation={validationSchema.education}
                   />
                   <FormField
                     register={register}
                     fieldName={`education.${index}.date_end`}
                     fieldLabel="End Date - Optional"
+                    error={errors.education?.[index]?.date_end?.message}
                   />
                   <FormField
                     register={register}
                     fieldName={`education.${index}.school_name`}
                     fieldLabel="School Name"
+                    error={errors.education?.[index]?.school_name?.message}
+                    validation={validationSchema.education}
                   />
                 </div>
               ))}
@@ -273,6 +347,8 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     register={register}
                     fieldName={`projects.${index}.name`}
                     fieldLabel="Project Name"
+                    error={errors.projects?.[index]?.name?.message}
+                    validation={validationSchema.projects}
                   />
                   <FormField
                     register={register}
@@ -280,12 +356,16 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
                     fieldLabel="Project Description"
                     fieldType="textarea"
                     rows={4}
+                    validation={validationSchema.projects}
+                    error={errors.projects?.[index]?.description?.message}
                   />
 
                   <FormField
                     register={register}
                     fieldName={`projects.${index}.technologies`}
                     fieldLabel="Technologies Used"
+                    error={errors.projects?.[index]?.technologies?.message}
+                    validation={validationSchema.projects}
                   />
                 </div>
               ))}

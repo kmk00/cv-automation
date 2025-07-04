@@ -7,6 +7,7 @@ interface DynamicExperienceResponsibilityProps {
   register: any;
   handleAddResponsibility: (index: number) => void;
   handleRemoveResponsibility: (index: number, rIndex: number) => void;
+  errors: any;
 }
 
 const DynamicExperienceResponsibility = ({
@@ -15,6 +16,7 @@ const DynamicExperienceResponsibility = ({
   register,
   handleAddResponsibility,
   handleRemoveResponsibility,
+  errors,
 }: DynamicExperienceResponsibilityProps) => {
   const lastResponsibilityIndex = experience.responsibilities.length - 1;
   const lastResponsibilityId = `work_experience.${index}.responsibilities.${lastResponsibilityIndex}`;
@@ -41,6 +43,11 @@ const DynamicExperienceResponsibility = ({
                 fieldLabel={`Responsibility ${rIndex + 1}`}
                 fieldType="textarea"
                 rows={2}
+                validation={{ required: "This responsibility is required" }}
+                error={
+                  errors?.work_experience?.[index]?.responsibilities?.[rIndex]
+                    ?.message
+                }
               />
             </div>
             {experience.responsibilities.length > 1 && (

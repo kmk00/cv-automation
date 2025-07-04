@@ -7,6 +7,8 @@ interface DynamicSoftSkillsProps {
   addSoftSkill: () => void;
   handleRemoveSoftSkill: (index: number) => void;
   softSkillsFields: any[];
+  validation?: any;
+  errors?: any;
 }
 
 const DynamicSoftSkills = ({
@@ -14,6 +16,8 @@ const DynamicSoftSkills = ({
   register,
   addSoftSkill,
   handleRemoveSoftSkill,
+  validation,
+  errors,
 }: DynamicSoftSkillsProps) => {
   const lastFieldIndex = softSkillsFields.length - 1;
   const lastFieldId = `soft_skills.${lastFieldIndex}`;
@@ -40,6 +44,8 @@ const DynamicSoftSkills = ({
                 fieldName={`soft_skills.${index}`}
                 fieldLabel={`Soft Skill ${index + 1}`}
                 fieldType="textarea"
+                error={errors?.soft_skills?.[index]?.message}
+                validation={validation}
               />
             </div>
             {softSkillsFields.length > 1 && (

@@ -7,6 +7,8 @@ interface DynamicTechnicalSkillsProps {
   register: any;
   addTechnicalSkill: () => void;
   handleRemoveTechnicalSkill: (index: number) => void;
+  validation?: any;
+  errors?: any;
 }
 
 const DynamicTechnicalSkills = ({
@@ -14,6 +16,8 @@ const DynamicTechnicalSkills = ({
   register,
   addTechnicalSkill,
   handleRemoveTechnicalSkill,
+  validation,
+  errors,
 }: DynamicTechnicalSkillsProps) => {
   const lastFieldIndex = technicalSkillsFields.length - 1;
   const lastFieldId = `technical_skills.${lastFieldIndex}`;
@@ -41,6 +45,8 @@ const DynamicTechnicalSkills = ({
                 fieldName={`technical_skills.${index}`}
                 fieldLabel={`Technical Skill ${index + 1}`}
                 fieldType="textarea"
+                error={errors?.technical_skills?.[index]?.message}
+                validation={validation}
               />
             </div>
             {technicalSkillsFields.length > 1 && (
