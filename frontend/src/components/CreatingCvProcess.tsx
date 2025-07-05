@@ -3,6 +3,7 @@ import { cvCreationApi } from "../api/cvCreation";
 import { useEffect } from "react";
 import ErrorMessage from "./ErrorMessage";
 import LoadingCVProcess from "./LoadingCVProcess";
+import CvToEdit from "./CvToEdit";
 
 type CreatingCvProcessProps = {
   jobListing: string;
@@ -38,11 +39,11 @@ const CreatingCvProcess = ({
   const analyzeJobListingMutation = useMutation({
     mutationFn: (jobListing: string) =>
       cvCreationApi.analyzeJobListing(jobListing),
-    onSuccess: (data) => {
-      generateCvMutation.mutate(data);
-      console.log("Job listing analyzed:", data);
-      setApplicationSteps(2);
-    },
+    // onSuccess: (data) => {
+    //   generateCvMutation.mutate(data);
+    //   // console.log("Job listing analyzed:", data);
+    //   setApplicationSteps(2);
+    // },
     onError: (error) => {
       console.error("Error analyzing job listing:", error);
     },
@@ -137,6 +138,10 @@ const CreatingCvProcess = ({
    * Success state for the final mutation
    * - uploadCvMutation: CV uploaded successfully
    */
+
+  if (analyzeJobListingMutation.isSuccess) {
+    return <CvToEdit personalizedCv={analyzeJobListingMutation.data.data} />;
+  }
 
   if (uploadCvMutation.isSuccess) {
     return (

@@ -1,0 +1,43 @@
+{
+  "name": "",
+  "surname": "",
+  "phone_number": "",
+  "email": "",
+  "linkedin": "",
+  "github": "",
+  "portfolio": "",
+  "work_profile": "",
+  "work_experience": [
+    {
+      "position_name": "",
+      "company_name": "",
+      "work_start": "",
+      "work_end": "",
+      "responsibilities": [""]
+    }
+  ],
+  "education": [
+    {
+      "subject": "",
+      "date_start": "",
+      "date_end": "",
+      "school_name": ""
+    }
+  ],
+  "projects": [
+    {
+      "name": "",
+      "description": "",
+      "technologies": [""]
+    }
+  ],
+  "soft_skills": [""],
+  "technical_skills": [""],
+  "languages": [
+    {
+      "name": "",
+      "level": ""
+    }
+  ],
+  "interests": [""]
+}
