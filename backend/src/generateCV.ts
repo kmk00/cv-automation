@@ -1,36 +1,52 @@
 import fs from "fs";
 import path from "path";
 import latex from "node-latex";
+import handlebars from "handlebars";
 
 async function generateCV(fastify, options) {
   fastify.post("/api/generate-cv", async (request, reply) => {
-    const inputPath = path.resolve("src/data/generatedCV/main.tex");
-    const outputPath = path.resolve("src/data/generatedCV/main.pdf");
+    const data = request.body;
+
+    console.log("Generating CV...");
+    console.log(data);
+
+    const inputTemplatePath = path.resolve(
+      "src/data/templates/mainCVTemplate.tex"
+    );
+    const outputTexPath = path.resolve("src/data/generatedCV/mainCV.tex");
+    const outputPDFPath = path.resolve("src/data/generatedCV/mainCV.pdf");
 
     try {
-      const input = fs.createReadStream(inputPath);
-      const output = fs.createWriteStream(outputPath);
+      const templateSource = fs.readFileSync(inputTemplatePath, "utf8");
+      const compiledTemplate = handlebars.compile(templateSource, {
+        data: data,
+      });
+      const renderedTex = compiledTemplate(data);
 
+      fs.writeFileSync(outputTexPath, renderedTex);
+
+      const input = fs.createReadStream(outputTexPath);
+      const output = fs.createWriteStream(outputPDFPath);
       const pdfStream = latex(input, {
-        cmd: "F:\\Latex\\miktex\\bin\\x64\\pdflatex.exe", // TODO: FIX PATH
+        cmd: "F:\\Latex\\miktex\\bin\\x64\\pdflatex.exe", // Your pdflatex path
       });
 
-      pdfStream.pipe(output);
-
       let replied = false;
+
+      pdfStream.pipe(output);
 
       const handleError = (err) => {
         if (!replied) {
           replied = true;
           console.error("PDF generation error:", err);
-          return { message: "PDF generation error" };
+          reply.code(500).send({ error: "PDF generation failed" });
         }
       };
 
       const handleFinish = () => {
         if (!replied) {
           replied = true;
-          return { message: "CV generated successfully" };
+          reply.send({ message: "CV generated successfully." });
         }
       };
 
@@ -39,8 +55,9 @@ async function generateCV(fastify, options) {
       output.on("finish", handleFinish);
     } catch (err) {
       console.error("Unexpected error:", err);
-      return { message: "Unexpected error" };
+      reply.code(500).send({ error: "Unhandled server error" });
     }
+    return { message: "CV generated successfully." };
   });
 }
 
