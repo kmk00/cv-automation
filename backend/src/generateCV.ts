@@ -13,8 +13,11 @@ async function generateCV(fastify, options) {
     const inputTemplatePath = path.resolve(
       "src/data/templates/mainCVTemplate.tex"
     );
-    const outputTexPath = path.resolve("src/data/generatedCV/mainCV.tex");
-    const outputPDFPath = path.resolve("src/data/generatedCV/mainCV.pdf");
+
+    const PDFfileName = "CV_" + Date.now().toString() + ".pdf";
+
+    const outputTexPath = path.resolve(`src/data/generatedCV/mainCV.tex`);
+    const outputPDFPath = path.resolve(`src/data/generatedCV/${PDFfileName}`);
 
     try {
       const templateSource = fs.readFileSync(inputTemplatePath, "utf8");
