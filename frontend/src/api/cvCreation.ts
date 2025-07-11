@@ -54,8 +54,8 @@ export const cvCreationApi = {
       throw error;
     }
   },
-  uploadCv: async () => {
-    console.log("Uploading CV...");
+  uploadCv: async (fileName: string) => {
+    console.log("Uploading CV..." + fileName);
     await new Promise((resolve) => setTimeout(resolve, TIME));
     return "CV uploaded successfully";
   },

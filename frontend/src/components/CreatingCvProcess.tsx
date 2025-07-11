@@ -33,10 +33,6 @@ const CreatingCvProcess = ({
     if (applicationSteps === 2 && cvToPDF) {
       generateCvMutation.mutate(cvToPDF);
     }
-
-    if (applicationSteps === 3) {
-      uploadCvMutation.mutate();
-    }
   }, [applicationSteps, cvToPDF]);
 
   /**
@@ -58,6 +54,7 @@ const CreatingCvProcess = ({
     onSuccess: (data) => {
       console.log("CV generated:", data);
       setApplicationSteps(3);
+      uploadCvMutation.mutate(data.filename);
     },
     onError: (error) => {
       console.error("Error generating CV:", error);
@@ -65,7 +62,7 @@ const CreatingCvProcess = ({
   });
 
   const uploadCvMutation = useMutation({
-    mutationFn: () => cvCreationApi.uploadCv(),
+    mutationFn: (fileName: string) => cvCreationApi.uploadCv(fileName),
     onSuccess: () => {
       console.log("CV uploaded successfully");
     },
