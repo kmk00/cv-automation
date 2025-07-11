@@ -1,16 +1,23 @@
 import type { CV } from "../../types/CV";
+import useCVToPDF from "../store/cvToEdit";
 
 interface ConfirmationModalProps {
   personalizedCv: CV;
   onClose: () => void;
+  setApplicationSteps: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const ConfirmationModal = ({
   personalizedCv,
   onClose,
+  setApplicationSteps,
 }: ConfirmationModalProps) => {
+  const { setCVToPDF } = useCVToPDF();
+
   const handleConfirm = () => {
-    console.log("Confirmed action for CV:", personalizedCv);
+    console.log("Confirm clicked");
+    setCVToPDF(personalizedCv);
+    setApplicationSteps(2);
   };
 
   return (

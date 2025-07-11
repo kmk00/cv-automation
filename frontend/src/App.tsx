@@ -22,6 +22,7 @@ function App() {
           jobListing={jobListing}
         />
       )}
+      <p className="text-2xl text-red-400">{applicationSteps}</p>
     </>
   );
 }

@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { CV } from "../../types/CV";
 
 const TIME = 20000;
 
@@ -28,12 +29,32 @@ export const cvCreationApi = {
       throw error;
     }
   },
-  generateCv: async (jobListing: string) => {
-    console.log("Generating CV...");
-    await new Promise((resolve) => setTimeout(resolve, TIME));
-    return "CV Data";
+  generateCv: async (CVData: CV) => {
+    if (!CVData) {
+      throw new Error("CV Data is required");
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/generate-cv",
+        {
+          CVData,
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Failed to generate CV");
+      }
+
+      console.log("CV response from backend:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Error generating CV:", error);
+      throw error;
+    }
   },
-  uploadCv: async (cvData: string) => {
+  uploadCv: async () => {
     console.log("Uploading CV...");
     await new Promise((resolve) => setTimeout(resolve, TIME));
     return "CV uploaded successfully";

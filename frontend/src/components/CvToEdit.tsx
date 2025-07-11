@@ -11,9 +11,10 @@ import { validationSchema } from "../lib/cvEditValidationSchema";
 
 interface CvToEditProps {
   personalizedCv: CV;
+  setApplicationSteps: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
+const CvToEdit = ({ personalizedCv, setApplicationSteps }: CvToEditProps) => {
   const {
     register,
     control,
@@ -385,6 +386,7 @@ const CvToEdit = ({ personalizedCv }: CvToEditProps) => {
         <ConfirmationModal
           personalizedCv={personalizedCv}
           onClose={() => setIsConfirmationModalOpen(false)}
+          setApplicationSteps={setApplicationSteps}
         />
       )}
     </div>
