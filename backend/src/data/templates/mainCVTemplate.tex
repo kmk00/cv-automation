@@ -143,11 +143,7 @@
     \fontsize{15 pt}{15 pt}\selectfont \textbf{ {{name}} {{surname}} }
 
     \vspace{5 pt}
-
     \normalsize
-    \mbox{ {{location}} }%
-    \kern 5.0 pt%
-    \AND%
     \kern 5.0 pt%
     \mbox{\hrefWithoutArrow{mailto:{{email}} }{ {{email}} }}%
     \kern 5.0 pt%
@@ -182,7 +178,7 @@
 
 {{#each work_experience}}
 \begin{twocolentry}{ {{work_start}} -- {{work_end}} }
-    \textbf{ {{position_name}} }, {{company_name}}
+    \textbf{ {{position_name}} } | {{company_name}}
 \end{twocolentry}
 
 \vspace{0.1cm}
@@ -201,7 +197,7 @@
 
 {{#each education}}
 \begin{twocolentry}{ {{date_start}}{{#if date_end}} -- {{date_end}}{{/if}} }
-    \textbf{ {{subject}} }, {{school_name}}
+    \textbf{ {{subject}} }| {{school_name}}
 \end{twocolentry}
 
 \vspace{0.2cm}
@@ -210,7 +206,21 @@
 \section{Technologie}
 
 \begin{onecolentry}
-    \textbf{Umiejętności techniczne:} {{#each technical_skills}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+    \begin{highlights}
+        {{#each technical_skills}}
+        \item {{this}}
+        {{/each}}
+    \end{highlights}
+\end{onecolentry}
+
+\section{Umiejętności miękkie}
+
+\begin{onecolentry}
+    \begin{highlights}
+        {{#each soft_skills}}
+        \item {{this}}
+        {{/each}}
+    \end{highlights}
 \end{onecolentry}
 
 \section{Projekty}
@@ -237,15 +247,7 @@
     {{/each}}
 \end{onecolentry}
 
-\section{Umiejętności miękkie}
 
-\begin{onecolentry}
-    \begin{highlights}
-        {{#each soft_skills}}
-        \item {{this}}
-        {{/each}}
-    \end{highlights}
-\end{onecolentry}
 
 \section{Zainteresowania}
 
