@@ -11,6 +11,8 @@ async function generateCV(fastify, options) {
       "src/data/templates/mainCVTemplate.tex"
     );
 
+    deleteOldCVs();
+
     const PDFfileName = "CV_" + Date.now().toString() + ".pdf";
     const outputTexPath = path.resolve("src/data/generatedCV/mainCV.tex");
     const outputPDFPath = path.resolve(`src/data/generatedCV/${PDFfileName}`);
@@ -59,6 +61,33 @@ async function generateCV(fastify, options) {
       }
     }
   });
+}
+
+function deleteOldCVs() {
+  const generatedCVDir = path.resolve("src/data/generatedCV");
+  try {
+    const files = fs.readdirSync(generatedCVDir);
+    const cvFiles = files.filter(
+      (file) => file.startsWith("CV_") && file.endsWith(".pdf")
+    );
+
+    if (!cvFiles) return;
+
+    cvFiles.forEach((file) => {
+      const filePath = path.join(generatedCVDir, file);
+      try {
+        fs.unlinkSync(filePath);
+        console.log(`Deleted old CV file: ${file}`);
+      } catch (deleteError) {
+        console.warn(
+          `Failed to delete old CV file ${file}:`,
+          deleteError.message
+        );
+      }
+    });
+  } catch (dirError) {
+    console.warn("Could not read generated CV directory:", dirError.message);
+  }
 }
 
 export default generateCV;

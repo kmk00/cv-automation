@@ -25,6 +25,17 @@ async function uploadCV(fastify, options) {
 
       const result = await driveService.uploadFile(filePath, fileName);
 
+      try {
+        fs.unlinkSync(filePath);
+        console.log(`Deleted uploaded CV file: ${fileName}`);
+      } catch (deleteError) {
+        console.warn(
+          `Failed to delete uploaded CV file ${fileName}:`,
+          deleteError.message
+        );
+        // Continue execution even if deletion fails
+      }
+
       reply.send({
         message: "CV uploaded successfully",
         cvLink: result.webViewLink,
