@@ -1,8 +1,6 @@
 import axios from "axios";
 import type { CV } from "../../types/CV";
 
-const TIME = 20000;
-
 export const cvCreationApi = {
   analyzeJobListing: async (jobListing: string) => {
     if (!jobListing) {
@@ -56,7 +54,16 @@ export const cvCreationApi = {
   },
   uploadCv: async (fileName: string) => {
     console.log("Uploading CV..." + fileName);
-    await new Promise((resolve) => setTimeout(resolve, TIME));
-    return "CV uploaded successfully";
+
+    const response = await axios.get(
+      `http://localhost:3000/api/upload-cv?fileName=${fileName}`
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Failed to upload CV");
+    }
+
+    console.log("CV uploaded successfully" + response.data);
+    return response.data;
   },
 };

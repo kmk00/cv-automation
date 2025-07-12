@@ -7,6 +7,7 @@ async function generateCV(fastify, options) {
   fastify.post("/api/generate-cv", async (request, reply) => {
     const data = request.body;
 
+    console.clear();
     console.log("Generating CV...");
     console.log(data);
 
@@ -49,7 +50,10 @@ async function generateCV(fastify, options) {
       const handleFinish = () => {
         if (!replied) {
           replied = true;
-          reply.send({ message: "CV generated successfully." });
+          reply.send({
+            message: "CV generated successfully.",
+            filename: PDFfileName,
+          });
         }
       };
 
@@ -60,7 +64,7 @@ async function generateCV(fastify, options) {
       console.error("Unexpected error:", err);
       reply.code(500).send({ error: "Unhandled server error" });
     }
-    return { message: "CV generated successfully." };
+    return { message: "CV generated successfully.", filename: PDFfileName };
   });
 }
 

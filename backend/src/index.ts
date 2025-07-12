@@ -1,8 +1,11 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
+import multipart from "@fastify/multipart";
+
 import analyzeJobListing from "./analyzeJobListing";
 import generateCV from "./generateCV";
 import uploadCV from "./uploadCV";
-import cors from "@fastify/cors";
+import authCallbackRoute from "./authCallback";
 
 const fastify = Fastify({ logger: true });
 
@@ -11,11 +14,18 @@ fastify.get("/", async (request, reply) => {
 });
 
 await fastify.register(cors, {
-  origin: true, // for all origins
+  origin: true,
+});
+
+fastify.register(multipart, {
+  limits: {
+    fileSize: 15 * 1024 * 1024,
+  },
 });
 
 fastify.register(analyzeJobListing);
 fastify.register(generateCV);
+fastify.register(authCallbackRoute);
 fastify.register(uploadCV);
 
 fastify.listen({ port: 3000 }, function (err, address) {

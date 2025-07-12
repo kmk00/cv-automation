@@ -27,3 +27,4 @@ dist-ssr
 personal-information.json
 
 src/data/generatedCV
+src/data/token.json
