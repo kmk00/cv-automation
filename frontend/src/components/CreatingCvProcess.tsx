@@ -6,6 +6,7 @@ import LoadingCVProcess from "./LoadingCVProcess";
 import CvToEdit from "./CvToEdit";
 import type { CV } from "../../types/CV";
 import useCVToPDF from "../store/cvToEdit";
+import UploadedSuccess from "./UploadedSuccess";
 
 type CreatingCvProcessProps = {
   jobListing: string;
@@ -31,6 +32,7 @@ const CreatingCvProcess = ({
     }
 
     if (applicationSteps === 2 && cvToPDF) {
+      console.log("CV to PDF:", cvToPDF);
       generateCvMutation.mutate(cvToPDF);
     }
   }, [applicationSteps, cvToPDF]);
@@ -52,9 +54,14 @@ const CreatingCvProcess = ({
   const generateCvMutation = useMutation({
     mutationFn: (jobListing: CV) => cvCreationApi.generateCv(jobListing),
     onSuccess: (data) => {
-      console.log("CV generated:", data);
+      console.log("CV generated:", data.fileName);
       setApplicationSteps(3);
-      uploadCvMutation.mutate(data.filename);
+
+      if (!data.fileName) {
+        throw new Error("Generated CV does not have a filename");
+      }
+
+      uploadCvMutation.mutate(data.fileName);
     },
     onError: (error) => {
       console.error("Error generating CV:", error);
@@ -148,22 +155,7 @@ const CreatingCvProcess = ({
   }
 
   if (uploadCvMutation.isSuccess && applicationSteps === 3) {
-    return (
-      <div className="flex flex-col min-w-72 items-center gap-2 border p-4 rounded-lg shadow-md">
-        <h2>CV uploaded successfully</h2>
-        <p className="text-sm text-gray-500">
-          You can find your CV in your Google Drive.
-        </p>
-        <a
-          href={import.meta.env.VITE_GOOGLE_DRIVE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline mt-2"
-        >
-          Open Google Drive
-        </a>
-      </div>
-    );
+    return <UploadedSuccess uploadedCVDetails={uploadCvMutation.data.data} />;
   }
 };
 

@@ -46,6 +46,9 @@ export const cvCreationApi = {
 
       console.log("CV response from backend:", response.data);
 
+      const fileName = response.data.fileName;
+      console.log("Generated CV filename:", fileName);
+
       return response.data;
     } catch (error) {
       console.error("Error generating CV:", error);

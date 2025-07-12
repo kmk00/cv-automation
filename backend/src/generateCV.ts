@@ -7,64 +7,57 @@ async function generateCV(fastify, options) {
   fastify.post("/api/generate-cv", async (request, reply) => {
     const data = request.body;
 
-    console.clear();
-    console.log("Generating CV...");
-    console.log(data);
-
     const inputTemplatePath = path.resolve(
       "src/data/templates/mainCVTemplate.tex"
     );
 
     const PDFfileName = "CV_" + Date.now().toString() + ".pdf";
-
-    const outputTexPath = path.resolve(`src/data/generatedCV/mainCV.tex`);
+    const outputTexPath = path.resolve("src/data/generatedCV/mainCV.tex");
     const outputPDFPath = path.resolve(`src/data/generatedCV/${PDFfileName}`);
 
     try {
       const templateSource = fs.readFileSync(inputTemplatePath, "utf8");
-      const compiledTemplate = handlebars.compile(templateSource, {
-        data: data,
-      });
-      const renderedTex = compiledTemplate(data);
+
+      const compiledTemplate = handlebars.compile(templateSource);
+      const renderedTex = compiledTemplate(data.CVData);
 
       fs.writeFileSync(outputTexPath, renderedTex);
 
       const input = fs.createReadStream(outputTexPath);
       const output = fs.createWriteStream(outputPDFPath);
       const pdfStream = latex(input, {
-        cmd: "F:\\Latex\\miktex\\bin\\x64\\pdflatex.exe", // Your pdflatex path
+        cmd: "F:\\Latex\\miktex\\bin\\x64\\pdflatex.exe", // ścieżka do pdflatex
       });
-
-      let replied = false;
 
       pdfStream.pipe(output);
 
-      const handleError = (err) => {
-        if (!replied) {
-          replied = true;
-          console.error("PDF generation error:", err);
-          reply.code(500).send({ error: "PDF generation failed" });
-        }
-      };
+      // Wait for PDF generation to complete before sending response
+      await new Promise((resolve, reject) => {
+        pdfStream.on("end", () => {
+          console.log("PDF generated successfully!");
+          console.log(`PDF saved to: ${PDFfileName}`);
+          resolve(null);
+        });
 
-      const handleFinish = () => {
-        if (!replied) {
-          replied = true;
-          reply.send({
-            message: "CV generated successfully.",
-            filename: PDFfileName,
-          });
-        }
-      };
+        pdfStream.on("error", (error) => {
+          console.error("PDF generation error:", error);
+          reject(error);
+        });
 
-      pdfStream.on("error", handleError);
-      output.on("error", handleError);
-      output.on("finish", handleFinish);
+        output.on("error", (error) => {
+          console.error("Output stream error:", error);
+          reject(error);
+        });
+      });
+
+      // Send response only after PDF is generated
+      reply.send({ fileName: PDFfileName });
     } catch (err) {
       console.error("Unexpected error:", err);
-      reply.code(500).send({ error: "Unhandled server error" });
+      if (!reply.sent) {
+        reply.code(500).send({ error: "Unhandled server error" });
+      }
     }
-    return { message: "CV generated successfully.", filename: PDFfileName };
   });
 }
 
