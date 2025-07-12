@@ -70,8 +70,8 @@ const CreatingCvProcess = ({
 
   const uploadCvMutation = useMutation({
     mutationFn: (fileName: string) => cvCreationApi.uploadCv(fileName),
-    onSuccess: () => {
-      console.log("CV uploaded successfully");
+    onSuccess: (data) => {
+      console.log("SuccessData:", data);
     },
     onError: (error) => {
       console.error("Error uploading CV:", error);
@@ -155,7 +155,12 @@ const CreatingCvProcess = ({
   }
 
   if (uploadCvMutation.isSuccess && applicationSteps === 3) {
-    return <UploadedSuccess uploadedCVDetails={uploadCvMutation.data.data} />;
+    return (
+      <UploadedSuccess
+        uploadedCVDetails={uploadCvMutation.data}
+        setApplicationSteps={setApplicationSteps}
+      />
+    );
   }
 };
 
