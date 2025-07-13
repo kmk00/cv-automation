@@ -23,7 +23,6 @@ const DynamicTechnicalSkills = ({
   const lastFieldId = `technical_skills.${lastFieldIndex}`;
 
   useEffect(() => {
-    // Add a small delay to ensure the DOM element is rendered
     const timer = setTimeout(() => {
       const lastField = document.getElementById(lastFieldId);
       if (lastField) {

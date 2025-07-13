@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import GoogleDriveService from "../GoogleDriveService"; // Update this path
+import GoogleDriveService from "../services/GoogleDriveService";
 
 async function uploadCV(fastify, options) {
   const driveService = new GoogleDriveService();

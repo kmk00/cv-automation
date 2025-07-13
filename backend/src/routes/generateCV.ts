@@ -28,12 +28,11 @@ async function generateCV(fastify, options) {
       const input = fs.createReadStream(outputTexPath);
       const output = fs.createWriteStream(outputPDFPath);
       const pdfStream = latex(input, {
-        cmd: "F:\\Latex\\miktex\\bin\\x64\\pdflatex.exe", // ścieżka do pdflatex
+        cmd: process.env.PDF_LATEX_PATH!,
       });
 
       pdfStream.pipe(output);
 
-      // Wait for PDF generation to complete before sending response
       await new Promise((resolve, reject) => {
         pdfStream.on("end", () => {
           console.log("PDF generated successfully!");
@@ -52,7 +51,6 @@ async function generateCV(fastify, options) {
         });
       });
 
-      // Send response only after PDF is generated
       reply.send({ fileName: PDFfileName });
     } catch (err) {
       console.error("Unexpected error:", err);
