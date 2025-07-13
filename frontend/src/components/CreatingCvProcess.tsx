@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import ErrorMessage from "./ErrorMessage";
 import LoadingCVProcess from "./LoadingCVProcess";
 import CvToEdit from "./CvToEdit";
+import type { CV } from "../../types/CV";
+import useCVToPDF from "../store/cvToEdit";
+import UploadedSuccess from "./UploadedSuccess";
 
 type CreatingCvProcessProps = {
   jobListing: string;
@@ -20,15 +23,18 @@ const CreatingCvProcess = ({
    * useEffect to trigger the job listing analysis when the component mounts
    * This is only done when applicationSteps is 1, indicating the first step of the process
    */
+
+  const { cvToPDF } = useCVToPDF();
+
   useEffect(() => {
     if (applicationSteps === 1) {
       analyzeJobListingMutation.mutate(jobListing);
     }
-  }, []);
 
-  const handleCVDownload = () => {
-    console.log("Download CV clicked");
-  };
+    if (applicationSteps === 2 && cvToPDF) {
+      generateCvMutation.mutate(cvToPDF);
+    }
+  }, [applicationSteps, cvToPDF]);
 
   /**
    * Mutations for the CV creation process
@@ -39,22 +45,21 @@ const CreatingCvProcess = ({
   const analyzeJobListingMutation = useMutation({
     mutationFn: (jobListing: string) =>
       cvCreationApi.analyzeJobListing(jobListing),
-    // onSuccess: (data) => {
-    //   generateCvMutation.mutate(data);
-    //   // console.log("Job listing analyzed:", data);
-    //   setApplicationSteps(2);
-    // },
     onError: (error) => {
       console.error("Error analyzing job listing:", error);
     },
   });
 
   const generateCvMutation = useMutation({
-    mutationFn: (jobListing: string) => cvCreationApi.generateCv(jobListing),
+    mutationFn: (jobListing: CV) => cvCreationApi.generateCv(jobListing),
     onSuccess: (data) => {
-      console.log("CV generated:", data);
-      uploadCvMutation.mutate(data);
       setApplicationSteps(3);
+
+      if (!data.fileName) {
+        throw new Error("Generated CV does not have a filename");
+      }
+
+      uploadCvMutation.mutate(data.fileName);
     },
     onError: (error) => {
       console.error("Error generating CV:", error);
@@ -62,11 +67,7 @@ const CreatingCvProcess = ({
   });
 
   const uploadCvMutation = useMutation({
-    mutationFn: (cvData: string) => cvCreationApi.uploadCv(cvData),
-    onSuccess: () => {
-      console.log("CV uploaded successfully");
-      setApplicationSteps(4);
-    },
+    mutationFn: (fileName: string) => cvCreationApi.uploadCv(fileName),
     onError: (error) => {
       console.error("Error uploading CV:", error);
     },
@@ -139,32 +140,21 @@ const CreatingCvProcess = ({
    * - uploadCvMutation: CV uploaded successfully
    */
 
-  if (analyzeJobListingMutation.isSuccess) {
-    return <CvToEdit personalizedCv={analyzeJobListingMutation.data.data} />;
+  if (analyzeJobListingMutation.isSuccess && applicationSteps === 1) {
+    return (
+      <CvToEdit
+        personalizedCv={analyzeJobListingMutation.data.data}
+        setApplicationSteps={setApplicationSteps}
+      />
+    );
   }
 
-  if (uploadCvMutation.isSuccess) {
+  if (uploadCvMutation.isSuccess && applicationSteps === 3) {
     return (
-      <div className="flex flex-col min-w-72 items-center gap-2 border p-4 rounded-lg shadow-md">
-        <h2>CV uploaded successfully</h2>
-        <p className="text-sm text-gray-500">
-          You can find your CV in your Google Drive.
-        </p>
-        <a
-          href={import.meta.env.VITE_GOOGLE_DRIVE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline mt-2"
-        >
-          Open Google Drive
-        </a>
-        <button
-          onClick={handleCVDownload}
-          className="bg-green-700 text-white p-2 rounded cursor-pointer"
-        >
-          Download CV
-        </button>
-      </div>
+      <UploadedSuccess
+        uploadedCVDetails={uploadCvMutation.data}
+        setApplicationSteps={setApplicationSteps}
+      />
     );
   }
 };

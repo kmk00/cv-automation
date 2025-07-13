@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import personalInfoData from "./data/personal-information.json";
+import personalInfoData from "../data/personal-information.json";
 import "dotenv/config";
 
 async function analyzeJobListing(fastify, options) {

@@ -38,7 +38,7 @@ const JobDescriptionForm = ({
         {...register("jobListing", { required: true })}
       ></textarea>
       <button
-        className="bg-green-700 text-white p-2 rounded hover:bg-green-200 transition cursor-pointer"
+        className="bg-blue-700 text-white p-2 rounded hover:bg-blue-600 transition cursor-pointer"
         type="submit"
         onClick={handleSubmit(onSubmit)}
       >
