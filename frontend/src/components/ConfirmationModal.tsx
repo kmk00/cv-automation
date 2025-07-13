@@ -15,7 +15,6 @@ const ConfirmationModal = ({
   const { setCVToPDF } = useCVToPDF();
 
   const handleConfirm = () => {
-    console.log("Confirm clicked");
     setCVToPDF(personalizedCv);
     setApplicationSteps(2);
   };

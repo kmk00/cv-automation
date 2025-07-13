@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import GoogleDriveService from "./GoogleDriveService"; // Update this path
+import GoogleDriveService from "../GoogleDriveService"; // Update this path
 
 async function uploadCV(fastify, options) {
   const driveService = new GoogleDriveService();
@@ -33,7 +33,6 @@ async function uploadCV(fastify, options) {
           `Failed to delete uploaded CV file ${fileName}:`,
           deleteError.message
         );
-        // Continue execution even if deletion fails
       }
 
       reply.send({

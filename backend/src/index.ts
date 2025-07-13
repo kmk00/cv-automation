@@ -2,10 +2,10 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 
-import analyzeJobListing from "./analyzeJobListing";
-import generateCV from "./generateCV";
-import uploadCV from "./uploadCV";
-import authCallbackRoute from "./authCallback";
+import analyzeJobListing from "./routes/analyzeJobListing";
+import generateCV from "./routes/generateCV";
+import uploadCV from "./routes/uploadCV";
+import authCallbackRoute from "./routes/authCallback";
 
 const fastify = Fastify({ logger: true });
 

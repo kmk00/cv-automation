@@ -19,8 +19,6 @@ export const cvCreationApi = {
         throw new Error("Failed to analyze job listing");
       }
 
-      console.log("Job listing response from backend:", response.data);
-
       return response.data;
     } catch (error) {
       console.error("Error analyzing job listing:", error);
@@ -44,11 +42,6 @@ export const cvCreationApi = {
         throw new Error("Failed to generate CV");
       }
 
-      console.log("CV response from backend:", response.data);
-
-      const fileName = response.data.fileName;
-      console.log("Generated CV filename:", fileName);
-
       return response.data;
     } catch (error) {
       console.error("Error generating CV:", error);
@@ -56,8 +49,6 @@ export const cvCreationApi = {
     }
   },
   uploadCv: async (fileName: string) => {
-    console.log("Uploading CV..." + fileName);
-
     const response = await axios.get(
       `http://localhost:3000/api/upload-cv?fileName=${fileName}`
     );
@@ -66,7 +57,6 @@ export const cvCreationApi = {
       throw new Error("Failed to upload CV");
     }
 
-    console.log("CV uploaded successfully" + response.data);
     return response.data;
   },
 };

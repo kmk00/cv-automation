@@ -32,7 +32,6 @@ const CreatingCvProcess = ({
     }
 
     if (applicationSteps === 2 && cvToPDF) {
-      console.log("CV to PDF:", cvToPDF);
       generateCvMutation.mutate(cvToPDF);
     }
   }, [applicationSteps, cvToPDF]);
@@ -54,7 +53,6 @@ const CreatingCvProcess = ({
   const generateCvMutation = useMutation({
     mutationFn: (jobListing: CV) => cvCreationApi.generateCv(jobListing),
     onSuccess: (data) => {
-      console.log("CV generated:", data.fileName);
       setApplicationSteps(3);
 
       if (!data.fileName) {
@@ -70,9 +68,6 @@ const CreatingCvProcess = ({
 
   const uploadCvMutation = useMutation({
     mutationFn: (fileName: string) => cvCreationApi.uploadCv(fileName),
-    onSuccess: (data) => {
-      console.log("SuccessData:", data);
-    },
     onError: (error) => {
       console.error("Error uploading CV:", error);
     },
