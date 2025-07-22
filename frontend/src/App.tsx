@@ -3,6 +3,7 @@ import JobDescriptionForm from "./components/JobDescriptionForm";
 import CreatingCvProcess from "./components/CreatingCvProcess";
 import { useQuery } from "@tanstack/react-query";
 import AuthenticationInfo from "./components/AuthenticationInfo";
+import LoadingCVProcess from "./components/LoadingCVProcess";
 
 function App() {
   const [applicationSteps, setApplicationSteps] = useState<number>(0);
@@ -27,7 +28,16 @@ function App() {
   }
 
   if (isAuthenticated.isLoading) {
-    return <div>Loading authentication status...</div>;
+    return (
+      <LoadingCVProcess
+        image="/loading-spinner.svg"
+        text="Checking authentication status"
+      />
+    );
+  }
+
+  if (!isAuthenticated.data) {
+    return <div>Error fetching authentication status, please try again.</div>;
   }
 
   return (

@@ -7,10 +7,8 @@ const AuthenticationInfo = ({ authenticated }: AuthenticationInfoProps) => {
 
   if (authenticated) {
     return (
-      <div className="fixed bottom-4 left-4 flex flex-col gap-4 p-2 mb-4 text-green-500">
-        <p className="text-lg font-semibold">
-          Authentication Status: Authenticated
-        </p>
+      <div className="fixed bottom-4 left-4 flex flex-col gap-4 px-8 py-4 mb-4 text-green-500 glassmorphism">
+        <p className="text-lg font-semibold tracking-wider">Authenticated ✔</p>
       </div>
     );
   }
