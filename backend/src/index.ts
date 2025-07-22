@@ -9,10 +9,6 @@ import authCallbackRoute from "./routes/authCallback";
 
 const fastify = Fastify({ logger: true });
 
-fastify.get("/", async (request, reply) => {
-  return { hello: "world" };
-});
-
 await fastify.register(cors, {
   origin: true,
 });
