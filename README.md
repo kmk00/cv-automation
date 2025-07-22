@@ -10,6 +10,7 @@ Once the CV is generated, it is compiled into a PDF and automatically uploaded t
 This project combines natural language processing, LaTeX document generation, and cloud integration to offer a smart solution for job seekers.
 
 
+https://youtu.be/reh1qM6wNS0
 
 
 ## 🔑 Key Features
