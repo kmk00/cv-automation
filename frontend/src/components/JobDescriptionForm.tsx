@@ -7,11 +7,13 @@ type Inputs = {
 type JobDescriptionFormProps = {
   setApplicationSteps: React.Dispatch<React.SetStateAction<number>>;
   setJobListing: React.Dispatch<React.SetStateAction<string>>;
+  authenticated: boolean;
 };
 
 const JobDescriptionForm = ({
   setApplicationSteps,
   setJobListing,
+  authenticated,
 }: JobDescriptionFormProps) => {
   const {
     register,
@@ -30,16 +32,28 @@ const JobDescriptionForm = ({
       onSubmit={(e) => e.preventDefault()}
     >
       <textarea
-        className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+        className={`border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+          authenticated ? "" : "cursor-not-allowed bg-gray-600/40"
+        }`}
         id="jobListing"
         rows={10}
         cols={50}
-        placeholder="Paste your job listing here..."
+        disabled={!authenticated}
+        placeholder={
+          authenticated
+            ? "Paste job listing here..."
+            : "Please log in to paste job listing"
+        }
         {...register("jobListing", { required: true })}
       ></textarea>
       <button
-        className="bg-blue-700 text-white p-2 rounded hover:bg-blue-600 transition cursor-pointer"
+        className={` text-white p-2 rounded transition  ${
+          authenticated
+            ? "bg-green-500 hover:bg-green-600 cursor-pointer"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
         type="submit"
+        disabled={!authenticated}
         onClick={handleSubmit(onSubmit)}
       >
         Generate CV
